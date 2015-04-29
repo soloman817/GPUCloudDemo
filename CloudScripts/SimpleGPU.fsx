@@ -23,31 +23,19 @@ let gpuWorker = gpuWorker cluster
 
 module GPUModuleJIT =
     
-    let gpuAddOneOnRemoteNonStatic (inputs:int[]) =
-        cloud {
-            let gpuModule = new SimpleModule.JITModule(GPUModuleTarget.DefaultWorker)
-            let result = gpuModule.AddOne(inputs)
-            gpuModule.Dispose()
-            return result }
+    let gpuAddOneOnRemote (inputs:int[]) =
+        cloud { return SimpleModule.JITModule.Default.AddOne(inputs) }
         |> gpuRun cluster gpuWorker
 
-//GPUModuleJIT.gpuAddOneOnRemoteNonStatic [| 1; 2; 3; 4; 5 |]
+GPUModuleJIT.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]
 
 module GPUModuleAOT =
     
-    let gpuAddOneOnRemoteNonStatic (inputs:int[]) =
-        doJob cluster <| fun _ ->
-            let gpuModule = SimpleModule.AOTModule.Default
-            gpuModule.AddOne([| 1; 2; 3; 4; 5 |])
+    let gpuAddOneOnRemote (inputs:int[]) =
+        cloud { return SimpleModule.AOTModule.Default.AddOne(inputs) }
+        |> gpuRun cluster gpuWorker
 
-//        cloud {
-//            let gpuModule = new SimpleModule.AOTModule(GPUModuleTarget.DefaultWorker)
-//            let result = gpuModule.AddOne(inputs)
-//            gpuModule.Dispose()
-//            return result }
-//        |> gpuRun cluster gpuWorker
-
-GPUModuleAOT.gpuAddOneOnRemoteNonStatic [| 1; 2; 3; 4; 5 |]
+GPUModuleAOT.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]
 
 // This doesn't work now because it cannot send fsi quotation to remote
 module GPUTemplateScripting =
@@ -83,15 +71,14 @@ module GPUTemplateScripting =
 //GPUScripting.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]
 
 module GPUTemplate =
-//    let gpuAddOneOnLocal (data:int[]) =
-//        use program = Worker.Default.LoadProgram(SimpleTemplate.template)
-//        program.Run data
+    let gpuAddOneOnLocal (data:int[]) =
+        use program = Worker.Default.LoadProgram(SimpleTemplate.template)
+        program.Run data
 
     let gpuAddOneOnRemote (data:int[]) =
-        cloud { return SimpleTemplate.gpuAddOneOnLocal data } |> gpuRun cluster gpuWorker
+        cloud { return gpuAddOneOnLocal data } |> gpuRun cluster gpuWorker
 
-// This also has strange error
-//GPUTemplate.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]    
+GPUTemplate.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]    
 
 
 

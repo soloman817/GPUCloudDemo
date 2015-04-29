@@ -35,14 +35,14 @@ type AOTModule(target) =
     static member Default = defaultInstance.Value
 
     [<Kernel;ReflectedDefinition>]
-    member this.Kernel (outputs:deviceptr<int>) (inputs:deviceptr<int>) =
+    member this.Kernel (data:deviceptr<int>) =
         let tid = threadIdx.x
-        outputs.[tid] <- inputs.[tid] + 1
+        data.[tid] <- data.[tid] + 1
 
     member this.AddOne(inputs:int[]) =
         if inputs.Length > 512 then failwith "inputs.Length should <= 512, since this is just a simple test."
         use data = this.GPUWorker.Malloc(inputs)
         let lp = LaunchParam(1, inputs.Length)
-        this.GPULaunch <@ this.Kernel @> lp data.Ptr data.Ptr
+        this.GPULaunch <@ this.Kernel @> lp data.Ptr
         data.Gather()
 
