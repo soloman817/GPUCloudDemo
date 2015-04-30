@@ -35,8 +35,11 @@ let oneMillion = 1000000
 let numCloudWorkers = (cluster.GetWorkers(showInactive = false) |> Array.ofSeq).Length
 
 let numPoints = oneMillion
-let numStreamsPerSM = 5
-let numRuns = numCloudWorkers * 500
+let numStreamsPerSM = 25
+let numRuns = numCloudWorkers * 100
+
+// clear run counter
+cloud { CalcPI.runCounter <- 0 } |> Cloud.ParallelEverywhere |> cluster.Run |> ignore
 
 let pis = 
     createParams numPoints numStreamsPerSM numRuns

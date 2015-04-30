@@ -25,6 +25,8 @@ type CalcParam =
       NumStreamsPerSM : int
       GetRandom : int -> int -> Rng.IRandom<float> }
 
+let mutable runCounter = 0
+
 let calcPI (param:CalcParam) =
     if canDoGPUCalc.Value then
         let worker = Worker.Default
@@ -42,6 +44,9 @@ let calcPI (param:CalcParam) =
             let pointsX = points.Ptr
             let pointsY = points.Ptr + numPoints
             let lp = LaunchParam(numSMs * 8, 256)
+
+            runCounter <- runCounter + 1
+            printfn "Run #.%d : Random(%s) Streams(%d) Points(%d)" runCounter (random.GetType().Namespace) numStreams numPoints
 
             [| 0..numStreams-1 |]
             |> Array.map (fun streamId ->
