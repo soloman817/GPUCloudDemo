@@ -32,11 +32,11 @@ let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.Ca
         { NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandom } )
 
 let oneMillion = 1000000
-let numCloudWorkers = cluster.GetWorkers(showInactive = false) |> Array.ofSeq
+let numCloudWorkers = (cluster.GetWorkers(showInactive = false) |> Array.ofSeq).Length
 
 let numPoints = oneMillion
 let numStreamsPerSM = 5
-let numRuns = numCloudWorkers.Length * 500
+let numRuns = numCloudWorkers * 500
 
 let pis = 
     createParams numPoints numStreamsPerSM numRuns
