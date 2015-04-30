@@ -34,8 +34,8 @@ let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.Ca
 let oneMillion = 1000000
 let numCloudWorkers = (cluster.GetWorkers(showInactive = false) |> Array.ofSeq).Length
 
-let numPoints = oneMillion
-let numStreamsPerSM = 25
+let numPoints = oneMillion * 20
+let numStreamsPerSM = 10
 let numRuns = numCloudWorkers * 100
 
 // clear run counter
