@@ -64,26 +64,3 @@ module Common =
         let workflow = cloud { return! Cloud.StartAsCloudTask(computation, target = gpuWorker) }
         cluster.Run(workflow).Result
 
-    let doJob (cluster:Runtime) (f:unit -> 'T) =
-        let job = 
-            [| 1 .. 3 |]
-            |> CloudFlow.ofArray
-
-            |> CloudFlow.map (fun i -> 
-                let hostname = Dns.GetHostName()
-
-                if hostname = "KINGKONG" then 
-                    f() |> Some
-                else
-                    None)
-
-            |> CloudFlow.toArray
-            |> cluster.CreateProcess
-
-        cluster.ShowProcesses()
-        let results = job.AwaitResult()
-        let result = results |> Array.choose id
-        result.[0]
-
-
-

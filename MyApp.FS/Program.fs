@@ -2,5 +2,5 @@
 
 [<EntryPoint>]
 let main argv = 
-    printfn "%A" argv
+    MyApp.FS.CalcPI.test()
     0 // return an integer exit code

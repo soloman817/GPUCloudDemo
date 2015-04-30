@@ -66,6 +66,7 @@
     </Content>
     <Compile Include="SimpleTemplate.fs" />
     <Compile Include="SimpleModule.fs" />
+    <Compile Include="CalcPI.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>

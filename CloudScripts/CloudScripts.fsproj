@@ -53,6 +53,7 @@
     <None Include="Common.fsx" />
     <None Include="StartLocalWorker.fsx" />
     <None Include="SimpleGPU.fsx" />
+    <None Include="CalcPI.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
