@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="Program.fs" />
     <None Include="App.config" />
-    <None Include="MBraceTest.fsx" />
     <None Include="Common.fsx" />
     <None Include="StartLocalWorker.fsx" />
     <None Include="SimpleGPU.fsx" />
