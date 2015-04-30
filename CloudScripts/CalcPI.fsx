@@ -17,6 +17,7 @@ open MyApp.FS
 open CloudScripts
 
 let cluster = Runtime.GetHandle(config)
+cluster.ClearAllProcesses()
 
 let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.CalcParam[] =
     let rng = Random()
