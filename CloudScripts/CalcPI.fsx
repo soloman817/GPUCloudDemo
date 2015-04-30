@@ -36,7 +36,7 @@ let numCloudWorkers = cluster.GetWorkers(showInactive = false) |> Array.ofSeq
 
 let numPoints = oneMillion
 let numStreamsPerSM = 5
-let numRuns = numCloudWorkers.Length * 1000
+let numRuns = numCloudWorkers.Length * 500
 
 let pis = 
     createParams numPoints numStreamsPerSM numRuns
