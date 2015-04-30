@@ -34,9 +34,13 @@ let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.Ca
 let oneMillion = 1000000
 let numCloudWorkers = (cluster.GetWorkers(showInactive = false) |> Array.ofSeq).Length
 
-let numPoints = oneMillion * 20
+let numPoints = oneMillion * 10
 let numStreamsPerSM = 10
 let numRuns = numCloudWorkers * 100
+//let numRuns = numCloudWorkers * 2000
+
+// with 2 macbook pro (750M) and one GTX 580 card, a 2.5 minutes simulation generates pi = 3.141600131,
+// while a 28 minutes simulation generates pi= 3.141587482 .
 
 // clear run counter
 cloud { CalcPI.runCounter <- 0 } |> Cloud.ParallelEverywhere |> cluster.Run |> ignore
