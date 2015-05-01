@@ -91,6 +91,7 @@ Jobs : Active / Faulted / Completed / Total
 - Since the issue that m-brace cannot send quotations from FSI script, currently, we have to code the GPU module in normal assembly.
 - A GPU module instance represents a compiled and loaded GPU module, which should live as long as possible in cloud worker. To do so, in m-brace, we can use static member, for more details, please reference [here](https://github.com/mbraceproject/MBrace.StarterKit/issues/15)
 - Since Azure cloud is supposed to be homogeneous cloud, which every cloud node have same configuration. But in our CalcPI demo, we return `float option`, for the cloud worker without GPU, it returns `None`. There is other ways to specify worker, for more details, please reference [here](https://github.com/mbraceproject/MBrace.StarterKit/issues/16)
+- Alea GPU has reference to `Mono.Posix`, but on Windows, it will not call it, on Linux, mono has it. So Alea GPU nuget doesn't depend on `Mono.Posix`. But if you are doing cloud scripting, you need explicitly reference `Mono.Posix` so that m-brace can compile your script.
 - Related m-brace issues:
   - [Quotations cannot be sent](https://github.com/mbraceproject/MBrace.StarterKit/issues/18)
   - [Worker status not reset after long run](https://github.com/mbraceproject/MBrace.StarterKit/issues/20)
