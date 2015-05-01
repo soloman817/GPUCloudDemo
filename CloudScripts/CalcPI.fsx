@@ -19,6 +19,7 @@ open CloudScripts
 let cluster = Runtime.GetHandle(config)
 cluster.ClearAllProcesses()
 
+// a function to create a list of calcPI task parameter. We randomly select the seed and rng.
 let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.CalcParam[] =
     let rng = Random()
     Array.init numRuns (fun taskId ->
@@ -39,9 +40,10 @@ let numStreamsPerSM = 10
 let numRuns = numCloudWorkers * 100
 //let numRuns = numCloudWorkers * 2000
 
-// with 2 macbook pro (750M) and one GTX 580 card, a 2.5 minutes simulation generates pi = 3.141600131,
-// while a 28 minutes simulation generates pi= 3.141587482 .
-
+// this is the cloud workflow, we have a big question (numRuns task, each task will generate many 
+// random streams, and calc PI through these random numbers). CloudFlow.map will map these tasks
+// to avaialbe cloud workers. Because not all cloud worker has GPU, so we return float option.
+// at last, we choose the results and reduce them by mean.
 let pi = 
     createParams numPoints numStreamsPerSM numRuns
     |> CloudFlow.ofArray

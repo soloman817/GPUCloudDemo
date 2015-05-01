@@ -12,6 +12,8 @@ During this step, you should record two service endpoint strings for service bus
 
 Since the m-brace cloud worker running on Azure server doesn't have GPU supported, so you need find one or multiple machines which has nvidia GPU of at least Fermi arch, then setup the mbrace local worker on these machines:
 
+- first double check if your machine have nvidia GPU of at least Fermi arch
+- second, double check if you have a [License of Alea GPU](http://quantalea.com/licensing/) installed on your machine, for more detail of how to install Alea GPU license, you can reference [here](http://quantalea.com/static/app/tutorial/quick_start/licensing_and_deployment.html), [here](http://quantalea.com/static/app/manual/compilation-license_manager.html) and [here](http://quantalea.com/licensing/)
 - before you open the demo solution, please first run `InstallWindows.bat` in the solution folder. This script will do:
   - restore packages with [Paket](https://github.com/fsprojects/Paket)
   - copy some native resources for [Alea GPU JIT compilation](http://quantalea.com/static/app/manual/compilation-jit_compilation_in_detail.html) to the local cloud worker folder

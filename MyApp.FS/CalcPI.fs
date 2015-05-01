@@ -4,6 +4,7 @@ open System
 open Alea.CUDA
 open Alea.CUDA.Unbound
 
+// a gpu kernel, use [method-based way](http://quantalea.com/static/app/manual/compilation-method_based_gpu_coding.html)
 [<ReflectedDefinition;AOTCompile(AOTOnly = true)>]
 let kernelCountInside (pointsX:deviceptr<float>) (pointsY:deviceptr<float>) (numPoints:int) (numPointsInside:deviceptr<int>) =
     let start = blockIdx.x * blockDim.x + threadIdx.x
@@ -15,11 +16,13 @@ let kernelCountInside (pointsX:deviceptr<float>) (pointsY:deviceptr<float>) (num
         numPointsInside.[i] <- if sqrt (x*x + y*y) <= 1.0 then 1 else 0
         i <- i + stride
 
+// in this demo, we use default gpu worker, so we check if it is available
 let canDoGPUCalc =
     Lazy.Create <| fun _ ->
         try Device.Default |> ignore; true
         with _ -> false
 
+// parameters of one calc task
 type CalcParam =
     { TaskId : int
       NumPoints : int
@@ -27,8 +30,10 @@ type CalcParam =
       GetRandom : int -> int -> Rng.IRandom<float> }
 
 let calcPI (param:CalcParam) =
+    // if no gpu, we reutrn none
     if canDoGPUCalc.Value then
         let worker = Worker.Default
+        // we switch to the gpu worker thread to do the job
         worker.Eval <| fun _ ->
             let numPoints = param.NumPoints
             let numStreamsPerSM = param.NumStreamsPerSM
@@ -46,6 +51,7 @@ let calcPI (param:CalcParam) =
 
             printfn "Task #.%d : Random(%s) Streams(%d) Points(%d)" param.TaskId (random.GetType().Namespace) numStreams numPoints
 
+            // run on all random streams
             [| 0..numStreams-1 |]
             |> Array.map (fun streamId ->
                 random.Fill(0, numPoints, points)

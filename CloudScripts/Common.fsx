@@ -31,6 +31,7 @@ module Common =
     open Alea.CUDA.Utilities
     open Alea.CUDA.Unbound
 
+    // place your connection strings here
     let myStorageConnectionString = "yourstring"
     let myServiceBusConnectionString = "yourstring"
 
@@ -39,12 +40,14 @@ module Common =
             StorageConnectionString = myStorageConnectionString
             ServiceBusConnectionString = myServiceBusConnectionString }
 
+    // a cloud method to check if there is default gpu worker
     let isGPUEnabled =
         cloud {
             let! w = Cloud.CurrentWorker
             try Device.Default |> ignore; return Some w
             with _ -> return None }
 
+    // return one gpu enabled cloud worker
     let gpuWorker (cluster:Runtime) =
         let gpuWorkers =
             cloud { 
@@ -60,6 +63,7 @@ module Common =
             printfn "We choose worker %A." ((gpuWorker :?> WorkerRef).Hostname)
             gpuWorker
 
+    // run a cloud computation on a specified gpu enabled worker.
     let gpuRun (cluster:Runtime) gpuWorker (computation:Cloud<'T>) : 'T =
         let workflow = cloud { return! Cloud.StartAsCloudTask(computation, target = gpuWorker) }
         cluster.Run(workflow).Result

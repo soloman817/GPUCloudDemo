@@ -17,10 +17,15 @@ open CloudScripts
 let cluster = Runtime.GetHandle(config)
 let gpuWorker = gpuWorker cluster
 
+// you can run these cloud computation to get remote gpu and alea gpu information
 //let remoteGPU = cloud { return Worker.Default.ToString() } |> gpuRun cluster gpuWorker
-//
 //let remoteResourcePath = cloud { return Settings.Instance.Resource.Path } |> gpuRun cluster gpuWorker
 
+// The GPUModule (without AOT compile) is defined in a normal assembly, and 
+// note, we use JITModule.Default, which is a lazy singleton instance, live 
+// in remote cloud worker. Since module should live as long as possible, we 
+// use this singleton style to use the module (which is loaded in the default worker)
+// for multiple GPU devices, you need create your own static container instance.
 module GPUModuleJIT =
     
     let gpuAddOneOnRemote (inputs:int[]) =
@@ -29,6 +34,7 @@ module GPUModuleJIT =
 
 GPUModuleJIT.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]
 
+// this test is similar, just the module is AOT compiled on local machine.
 module GPUModuleAOT =
     
     let gpuAddOneOnRemote (inputs:int[]) =
@@ -70,6 +76,7 @@ module GPUTemplateScripting =
 // This doesn't work now because it cannot send fsi quotation to remote
 //GPUScripting.gpuAddOneOnRemote [| 1; 2; 3; 4; 5 |]
 
+// If the gpu template is created in a normal assembly, then it works
 module GPUTemplate =
     let gpuAddOneOnLocal (data:int[]) =
         use program = Worker.Default.LoadProgram(SimpleTemplate.template)
