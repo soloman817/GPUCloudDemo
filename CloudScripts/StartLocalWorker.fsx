@@ -15,10 +15,8 @@ open CloudScripts
 let cluster = Runtime.GetHandle(config)
 
 cluster.ShowWorkers()
-cluster.AttachLocalWorker(1, 1)
-cluster.ClearAllProcesses()
-
-Thread.Sleep(5000)
-
-cluster.ShowWorkers()
 cluster.ShowProcesses()
+
+cluster.AttachLocalWorker(1, 1)
+
+cluster.ClearAllProcesses()

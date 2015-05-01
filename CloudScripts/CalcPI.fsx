@@ -21,7 +21,7 @@ cluster.ClearAllProcesses()
 
 let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.CalcParam[] =
     let rng = Random()
-    Array.init numRuns (fun _ ->
+    Array.init numRuns (fun taskId ->
         let seed = rng.Next() |> uint32
         let getRandomXorshift7 numStreams numDimensions = Rng.XorShift7.CUDA.DefaultUniformRandomModuleF64.Default.Create(numStreams, numDimensions, seed) :> Rng.IRandom<float>
         let getRandomMrg32k3a  numStreams numDimensions = Rng.Mrg32k3a.CUDA.DefaultUniformRandomModuleF64.Default.Create(numStreams, numDimensions, seed) :> Rng.IRandom<float>
@@ -29,7 +29,7 @@ let createParams (numPoints:int) (numStreamsPerSM:int) (numRuns:int) : CalcPI.Ca
             match rng.Next(2) with
             | 0 -> getRandomXorshift7
             | _ -> getRandomMrg32k3a
-        { NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandom } )
+        { TaskId = taskId; NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandom } )
 
 let oneMillion = 1000000
 let numCloudWorkers = (cluster.GetWorkers(showInactive = false) |> Array.ofSeq).Length
@@ -41,9 +41,6 @@ let numRuns = numCloudWorkers * 100
 
 // with 2 macbook pro (750M) and one GTX 580 card, a 2.5 minutes simulation generates pi = 3.141600131,
 // while a 28 minutes simulation generates pi= 3.141587482 .
-
-// clear run counter
-cloud { CalcPI.runCounter <- 0 } |> Cloud.ParallelEverywhere |> cluster.Run |> ignore
 
 let pis = 
     createParams numPoints numStreamsPerSM numRuns

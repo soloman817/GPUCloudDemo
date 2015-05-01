@@ -21,11 +21,10 @@ let canDoGPUCalc =
         with _ -> false
 
 type CalcParam =
-    { NumPoints : int
+    { TaskId : int
+      NumPoints : int
       NumStreamsPerSM : int
       GetRandom : int -> int -> Rng.IRandom<float> }
-
-let mutable runCounter = 0
 
 let calcPI (param:CalcParam) =
     if canDoGPUCalc.Value then
@@ -45,8 +44,7 @@ let calcPI (param:CalcParam) =
             let pointsY = points.Ptr + numPoints
             let lp = LaunchParam(numSMs * 8, 256)
 
-            runCounter <- runCounter + 1
-            printfn "Run #.%d : Random(%s) Streams(%d) Points(%d)" runCounter (random.GetType().Namespace) numStreams numPoints
+            printfn "Task #.%d : Random(%s) Streams(%d) Points(%d)" param.TaskId (random.GetType().Namespace) numStreams numPoints
 
             [| 0..numStreams-1 |]
             |> Array.map (fun streamId ->
@@ -65,8 +63,8 @@ let test() =
     let getRandomXorshift7 numStreams numDimensions = Rng.XorShift7.CUDA.DefaultUniformRandomModuleF64.Default.Create(numStreams, numDimensions, 42u) :> Rng.IRandom<float>
     let getRandomMrg32k3a  numStreams numDimensions = Rng.Mrg32k3a.CUDA.DefaultUniformRandomModuleF64.Default.Create(numStreams, numDimensions, 42u) :> Rng.IRandom<float>
 
-    { NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandomXorshift7 }
+    { TaskId = 0; NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandomXorshift7 }
     |> calcPI |> printfn "pi=%A"
 
-    { NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandomMrg32k3a }
+    { TaskId = 0; NumPoints = numPoints; NumStreamsPerSM = numStreamsPerSM; GetRandom = getRandomMrg32k3a }
     |> calcPI |> printfn "pi=%A"
