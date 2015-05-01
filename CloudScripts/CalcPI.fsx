@@ -42,7 +42,7 @@ let numRuns = numCloudWorkers * 100
 // with 2 macbook pro (750M) and one GTX 580 card, a 2.5 minutes simulation generates pi = 3.141600131,
 // while a 28 minutes simulation generates pi= 3.141587482 .
 
-let pis = 
+let pi = 
     createParams numPoints numStreamsPerSM numRuns
     |> CloudFlow.ofArray
     |> CloudFlow.map CalcPI.calcPI
@@ -51,4 +51,4 @@ let pis =
     |> Array.choose id
     |> Array.average
 
-printfn "PI = %A" pis
+printfn "PI = %A" pi
