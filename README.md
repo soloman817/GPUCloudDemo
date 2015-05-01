@@ -87,6 +87,8 @@ Jobs : Active / Faulted / Completed / Total
 - Azure doesn't have GPU support. One solution is to create a private GPU cloud. m-brace cloud in this demo is composed by two components: `MBrace.Core` which provides the cloud programming model; and `MBrace.Azure` which implements cloud worker with Azure services, such as service bus and storage service. If we create private GPU cloud, we need re-implement `MBrace.Azure`, such as `MBrace.PrivateGPUCloud`, which then we need implement the cloud worker, and service bus and storage service.
 - When implementing the cloud worker, we need add the JIT native resources to the worker, like what we do in the `InstallWindows.bat`. Alea GPU support Windows/Linux/MacOSX, so it has its own native resource locating system.
 - Since the issue that m-brace cannot send quotations from FSI script, currently, we have to code the GPU module in normal assembly.
+- A GPU module instance represents a compiled and loaded GPU module, which should live as long as possible in cloud worker. To do so, in m-brace, we can use static member, for more details, please reference [here](https://github.com/mbraceproject/MBrace.StarterKit/issues/15)
+- Since Azure cloud is supposed to be homogeneous cloud, which every cloud node have same configuration. But in our CalcPI demo, we return `float option`, for the cloud worker without GPU, it returns `None`. There is other ways to specify worker, for more details, please reference [here](https://github.com/mbraceproject/MBrace.StarterKit/issues/16)
 - Related m-brace issues:
   - [Quotations cannot be sent](https://github.com/mbraceproject/MBrace.StarterKit/issues/18)
   - [Worker status not reset after long run](https://github.com/mbraceproject/MBrace.StarterKit/issues/20)
